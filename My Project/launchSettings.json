@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "tmcreate": {
+      "commandName": "Project",
+      "commandLineArgs": "submitkis --modelname test_new_push --file jsonfile.json --fqdn demo.threatmodeler.us --un mike.horty@threatmodeler.com --pw '3642717$Yd!'"
+    }
+  }
+}
