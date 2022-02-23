@@ -38,10 +38,13 @@ Module Program
         Select Case LCase(actionWord)
             Case "submitkiss", "submitkis"
                 Dim modelName$ = argValue("modelname", args)
-                If modelName = "" Then
-                    Console.WriteLine("You must provide a name for the Model using --MODELNAME (name)")
+                If Len(modelName) = 0 Then
+                    Console.WriteLine("You must provide a new or existing name for the Threat Model using --MODELNAME (name)")
                     End
                 End If
+
+                Dim beLoud As Boolean = False
+                If LCase(argValue("loud", args)) = "true" Then beLoud = True
 
                 Dim modelNum As Integer
                 Dim result2$ = T.createKISSmodelForImport(modelName)
@@ -63,13 +66,21 @@ Module Program
                     Console.WriteLine(resP)
                 Else
                     Console.WriteLine(T.tmFQDN + "/diagram/" + modelNum.ToString)
+                    If beLoud Then Console.WriteLine(resP)
                 End If
                 End
 
 
             Case "submitcfn"
                 Dim modelName$ = argValue("modelname", args)
-                modelName = Now.Ticks.ToString + modelName
+
+                If Len(modelName) = 0 Then
+                    Console.WriteLine("You must provide a new or existing name for the Threat Model using --MODELNAME (name)")
+                    End
+                End If
+
+                Dim beLoud As Boolean = False
+                If LCase(argValue("loud", args)) = "true" Then beLoud = True
 
                 Dim modelNum As Integer
                 Dim result2$ = T.createKISSmodelForImport(modelName)
@@ -91,6 +102,7 @@ Module Program
                     Console.WriteLine(resP)
                 Else
                     Console.WriteLine(T.tmFQDN + "/diagram/" + modelNum.ToString)
+                    If beLoud Then Console.WriteLine(resP)
                 End If
                 End
 
@@ -176,7 +188,7 @@ Module Program
 
 
 
-                Dim modelName$ = Now.Ticks.ToString + "_" + argValue("modelname", args)
+                Dim modelName$ = argValue("modelname", args)
                 If modelName = "" Then
                     Console.WriteLine("You must provide a name for the Model using --MODELNAME (name)")
                     End

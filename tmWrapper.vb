@@ -167,7 +167,7 @@ Public Class TM_Client
             Return jSon
         End If
 
-        Return "Action Completed"
+        Return "Action Completed" + vbCrLf + jSon
     End Function
 
     Public Function getTFComponents(T As tfRequest) As List(Of tmComponent)
