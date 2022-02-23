@@ -20,9 +20,6 @@ Public Class TM_Client
 
         Me.isConnected = False
 
-
-        'Console.WriteLine("New TM_Client activated: " + Replace(tmFQDN, "https://", ""))
-
         Console.WriteLine("Connecting to " + fqdN)
         Dim client = New RestClient(fqdN + "/token")
         Dim request = New RestRequest(Method.Post)
