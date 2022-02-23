@@ -28,5 +28,5 @@ jobs:
 
       - name: Create Threat Model
         working-directory: .\tmrunfiles
-        run: .\tmcreate submitcfn --modelname $MODELNAME --file $FILENAME --fqdn $TM_FQDN --un $secrets.DEMO_UN --pw $secrets.DEMO_PW
+        run: .\tmcreate submitcfn --modelname $MODELNAME --file $FILENAME --fqdn $TM_FQDN --un ${{secrets.DEMO_UN}} --pw ${{secrets.DEMO_PW}}
         
