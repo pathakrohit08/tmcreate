@@ -28,5 +28,5 @@ jobs:
 
       - name: Create Threat Model
         working-directory: .\tmrunfiles
-        run: .\tmcreate submitcfn --modelname GitHubAction_CFN_Complex.1 --file D:\a\tmcreate\tmcreate\cfn_complex.json --fqdn demo.threatmodeler.us --un ${{secrets.DEMO_UN}} --pw ${{secrets.DEMO_PW}}
+        run: .\tmcreate submitcfn --modelname GitHubAction_CFN_Complex.1 --file D:\a\tmcreate\tmcreate\cfn_complex.json --fqdn demo.threatmodeler.us --un ${{secrets.DEMO_UN}} --pw '${{secrets.DEMO_PW}}'
         
