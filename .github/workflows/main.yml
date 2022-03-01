@@ -8,9 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-   FILENAME: D:\a\tmcreate\tmcreate\cfn_complex.json
-   MODELNAME: GitHubAction_CFN_Complex
-   TM_FQDN: demo.threatmodeler.us
+   FILENAME: D:\a\tmcreate\tmcreate\WebServerEIPCfn_Secure.json
+   MODELNAME: GitHubAction_EPICfn_Secure
 
 jobs:
   build:
@@ -26,5 +25,10 @@ jobs:
 
       - name: Create Threat Model
         working-directory: .\tmrunfiles
-        run: .\tmcreate submitcfn --modelname "$env:MODELNAME" --file "$env:FILENAME" --fqdn "$env:TM_FQDN" --un ${{secrets.DEMO_UN}} --pw '${{secrets.DEMO_PW}}'
+        run: .\tmcreate submitcfn --modelname "$env:MODELNAME" --file "$env:FILENAME" --apikey ${{secrets.TM_APIKEY}}'
         
+      - name: Store SARIF results as Build Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: IAC_SARIF_Results
+          path: ${{ format('{0}.{1}', $env:MODELNAME, sarif) }}
