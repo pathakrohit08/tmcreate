@@ -5,22 +5,20 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
   workflow_dispatch:
+
+env:
+   FILENAME: D:\a\tmcreate\tmcreate\cfn_complex.json
+   MODELNAME: GitHubAction_CFN_Complex
+   TM_FQDN: demo.threatmodeler.us
 
 jobs:
   build:
     runs-on: windows-2022
-    env:
-       FILENAME: D:\a\TMCLI\TMCLI\cfn_complex.json
-       MODELNAME: GitHubAction_CFN_Complex
-       TM_FQDN: demo.threatmodeler.us
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Get the CLI and run it
       - name: Download/Unzip TM CLI
         run: |
           Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1W2OkfTlEt0JPLwV6gAdbA-Rb-tHqZuHJ" -OutFile tm_runfiles.zip
@@ -28,5 +26,5 @@ jobs:
 
       - name: Create Threat Model
         working-directory: .\tmrunfiles
-        run: .\tmutil submitcfn --modelname $MODELNAME --file $FILENAME --fqdn $TM_FQDN --un $secrets.DEMO_UN --pw $secrets.DEMO_PW
+        run: .\tmcreate submitcfn --modelname "$env:MODELNAME" --file "$env:FILENAME" --fqdn "$env:TM_FQDN" --un ${{secrets.DEMO_UN}} --pw '${{secrets.DEMO_PW}}'
         
