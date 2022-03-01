@@ -19,6 +19,10 @@ Module modCommon
         Return arg1 + spaces(numSpaces - Len(arg1)) + arg2
     End Function
 
+    Public Function DecodeBase64(input As String) As String
+        Return System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(input))
+    End Function
+
 
     Public Function inStrList(ByRef L As List(Of String), theStr$, Optional ByVal caseSensitive As Boolean = False) As Boolean
         inStrList = False

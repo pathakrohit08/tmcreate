@@ -2,7 +2,7 @@
   "profiles": {
     "tmcreate": {
       "commandName": "Project",
-      "commandLineArgs": "submitkis --modelname test_new_push --file jsonfile.json --fqdn demo.threatmodeler.us --un mike.horty@threatmodeler.com --pw '3642717$Yd!'"
+      "commandLineArgs": "submit_cfn --modelname test_new_cfn3 --file C:\\Users\\micha\\source\\repos\\tmcreate\\WebServerEIPCfn_Secure.json --apikey ZjU4MmZjY2MtMDg2NS00YWM4LWI5OTAtZTdhMmMzMWNhN2RjI2h0dHBzOi8vdGVzdDU1LnRocmVhdG1vZGVsZXIudXM="
     }
   }
 }

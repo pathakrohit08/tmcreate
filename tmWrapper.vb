@@ -8,21 +8,38 @@ Public Class TM_Client
     Public isConnected As Boolean
     Private slToken$
 
+    Private apiKey$
+
     Public lib_Comps As List(Of tmComponent)
     Public lib_TH As List(Of tmProjThreat)
     Public lib_SR As List(Of tmProjSecReq)
     Public lib_AT As List(Of tmAttribute)
 
-    Public Sub New(fqdN$, uN$, pw$)
+    Public Sub New(fqdN$, uN$, pw$, Optional ByVal apiK$ = "")
+        apiKey = ""
+
+        If Len(apiK) Then
+            ' if API KEY provided, do not need un/pw
+            apiKey = DecodeBase64(apiK)
+            fqdN = Mid(apiKey, InStr(apiKey, "https://") + 8)
+            apiKey = apiK
+        End If
+
+
         If InStr(fqdN, "https://") = 0 Then fqdN = "https://" + fqdN
 
         tmFQDN = fqdN
+
+        If Len(apiKey) Then
+            Me.isConnected = True
+            Exit Sub
+        End If
 
         Me.isConnected = False
 
         Console.WriteLine("Connecting to " + fqdN)
         Dim client = New RestClient(fqdN + "/token")
-        Dim request = New RestRequest(Method.Post)
+        Dim request = New RestRequest(Method.POST)
         Dim response As IRestResponse
 
         client.Timeout = -1
@@ -39,7 +56,7 @@ Public Class TM_Client
 
         If response.IsSuccessful = False Then
             client = New RestClient(fqdN + "/idsvr/connect/token")
-            request = New RestRequest(Method.Post)
+            request = New RestRequest(Method.POST)
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded")
             request.AddHeader("Accept", "application/json")
 
@@ -72,17 +89,17 @@ Public Class TM_Client
         'Console.WriteLine("Retrieved access token")
     End Sub
 
-    Private Function getAPIData(ByVal urI$, Optional ByVal usePOST As Boolean = False, Optional ByVal addJSONbody$ = "", Optional ByVal addingComp As Boolean = False, Optional ByVal addFileN$ = "") As String
+    Private Function getAPIData(ByVal urI$, Optional ByVal usePOST As Boolean = False, Optional ByVal addJSONbody$ = "", Optional ByVal addingComp As Boolean = False, Optional ByVal returnContent As Boolean = False, Optional ByVal addFileN$ = "") As String
         getAPIData = ""
         If isConnected = False Then Exit Function
 
         Dim client = New RestClient(tmFQDN + urI)
         Dim request As RestRequest
-        If usePOST = False Then request = New RestRequest(Method.Get) Else request = New RestRequest(Method.Post)
+        If usePOST = False Then request = New RestRequest(Method.GET) Else request = New RestRequest(Method.POST)
 
         Dim response As IRestResponse
 
-        request.AddHeader("Authorization", "Bearer " + slToken)
+        If apiKey = "" Then request.AddHeader("Authorization", "Bearer " + slToken)
         request.AddHeader("Accept", "application/json")
 
         If Len(addJSONbody) Then
@@ -102,13 +119,28 @@ Public Class TM_Client
             End If
         End If
 
+
         If Len(addFileN) Then
             request.AddFile("File", addFileN)
         End If
 
         response = client.Execute(request)
 
-        If addingComp Then
+        GoTo skipLogging
+
+        ' log details
+        Console.WriteLine(request.Method.ToString + " " + tmFQDN + urI)
+        For Each hh In response.Headers
+            Console.WriteLine(hh.Name.ToString + " " + hh.Value.ToString)
+        Next
+        For Each pp In request.Parameters
+            Console.WriteLine(pp.Name.ToString + " " + pp.Value.ToString)
+        Next
+        Console.WriteLine("=================CONTENT======================" + vbCrLf + response.Content.ToString)
+
+skipLogging:
+
+        If addingComp Or returnContent Then
             Return response.Content
         End If
 
@@ -129,7 +161,7 @@ Public Class TM_Client
         '        End If
 
         If CBool(O.SelectToken("IsSuccess")) = False Then
-            getAPIData = "ERROR:Could not retrieve " + urI
+            getAPIData = "ERROR:Could not retrieve " + tmFQDN + urI
             Exit Function
         End If
 
@@ -168,6 +200,35 @@ Public Class TM_Client
         End If
 
         Return "Action Completed" + vbCrLf + jSon
+    End Function
+
+    Public Function submitCFN_2(fileN$, tmName$) As String
+        submitCFN_2 = ""
+
+        Dim templatE As New cfnImport
+        With templatE
+            .TemplateLanguage = 0
+            .TemplateName = tmName
+            .Template = streamReaderTxt(fileN)
+        End With
+
+        Dim jBody$ = JsonConvert.SerializeObject(templatE)
+
+        'Console.WriteLine("JBODY:" + vbCrLf + jBody)
+
+        Dim jSon$ = getAPIData("/api/plugin/vscode/cloudformation/" + apiKey, True, jBody,, True)
+
+        Dim O As JObject = JObject.Parse(jSon)
+
+        Dim sariF$ = ""
+
+        If IsNothing(O.SelectToken("IsSuccess")) = True Or CBool(O.SelectToken("IsSuccess").ToString) = False Then
+            Return "ERROR: API Request Rejected-  " + vbCrLf + jSon
+        Else
+            sariF = O.SelectToken("Message")
+        End If
+
+        Return sariF
     End Function
 
     Public Function getTFComponents(T As tfRequest) As List(Of tmComponent)
@@ -210,6 +271,12 @@ Public Class kisCreateModel_setProject
     Public CreatedThrough As String
     Public UserPermissions As List(Of String)
     Public GroupPermissions As List(Of String)
+End Class
+
+Public Class cfnImport
+    Public TemplateName As String
+    Public Template As String
+    Public TemplateLanguage As Integer
 End Class
 
 Public Class tfRequest

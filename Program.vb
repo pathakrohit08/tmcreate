@@ -10,6 +10,8 @@ Module Program
 
         actionWord$ = args(0)
 
+        If LCase(actionWord) = "submit_cfn" Then GoTo withAPIkey
+
         If args.Count.ToString < 1 Or argExist("help", args) Then
             Call giveHelp()
             End
@@ -33,6 +35,7 @@ Module Program
             End
         End If
 
+withAPIkey:
         Console.WriteLine(vbCrLf + "ACTION: " + actionWord + vbCrLf)
 
         Select Case LCase(actionWord)
@@ -103,6 +106,40 @@ Module Program
                 Else
                     Console.WriteLine(T.tmFQDN + "/diagram/" + modelNum.ToString)
                     If beLoud Then Console.WriteLine(resP)
+                End If
+                End
+
+            Case "submit_cfn"
+                Dim apiKey$ = argValue("apikey", args)
+                If apiKey = "" Then
+                    Console.WriteLine("Must provide --APIKEY to use this command")
+                    End
+                End If
+
+                T = New TM_Client("", "", "", apiKey)
+                apiKey = ""
+
+                Dim modelName$ = argValue("modelname", args)
+
+                If Len(modelName) = 0 Then
+                    Console.WriteLine("You must provide a new or existing name for the Threat Model using --MODELNAME (name)")
+                    End
+                End If
+
+                Dim fileN$ = argValue("file", args)
+                If Dir(fileN) = "" Then
+                    Console.WriteLine("file does not exist " + fileN)
+                End If
+
+                Dim sariF$ = T.submitCFN_2(fileN, modelName)
+
+                If InStr(sariF, "ERROR: API Request Rejected") Then
+                    Console.WriteLine(sariF)
+                    End
+                Else
+                    Console.WriteLine("ThreatModel created: " + T.tmFQDN + "/diagram/####")
+                    saveJSONtoFile(sariF, modelName + ".sarif")
+                    Console.WriteLine("SARIF created: " + CurDir() + "\" + modelName + ".sarif")
                 End If
                 End
 
