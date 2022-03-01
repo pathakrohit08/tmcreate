@@ -31,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: IAC_SARIF_Results
-          path: sarif.json
+          path: .\tmrunfiles\sarif.json
