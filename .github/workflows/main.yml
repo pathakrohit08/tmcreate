@@ -31,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: IAC_SARIF_Results
-          path: ${{ format('{0}.{1}', ${{MODELNAME}}, sarif) }}
+          path: sarif.json
