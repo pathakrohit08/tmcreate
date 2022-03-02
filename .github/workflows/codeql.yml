@@ -11,10 +11,6 @@
 #
 name: "CodeQL"
 
-env:
-   FILENAME: D:\a\tmcreate\tmcreate\WebServerEIPCfn_Secure.json
-   MODELNAME: WebServerEIPCfn_Secure.json
-   
 on:
   push:
     branches: [ master ]
@@ -26,26 +22,42 @@ on:
 
 jobs:
   analyze:
-    runs-on: windows-2022
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
     steps:
-      - uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Download/Unzip TM CLI
-        run: |
-          Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1W2OkfTlEt0JPLwV6gAdbA-Rb-tHqZuHJ" -OutFile tm_runfiles.zip
-          Expand-Archive -LiteralPath tm_runfiles.zip -DestinationPath .\tmrunfiles
-      - name: Create Threat Model
-        working-directory: .\tmrunfiles
-        run: .\tmcreate submit_cfn --modelname "$env:MODELNAME" --file "$env:FILENAME" --apikey ${{secrets.TM_APIKEY}}
-        
-      - name: Store SARIF results as Build Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: IAC_SARIF_Results
-          path: .\tmrunfiles\sarif.json
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+         languages: javascript
+        # If you wish to specify custom queries, you can do so here or in a config file.
+        # By default, queries listed here will override any specified in a config file.
+        # Prefix the list here with "+" to use these queries and those in the config file.
+        # queries: ./path/to/local/query, your-org/your-repo/queries@main
 
-      - uses: github/codeql-action/upload-sarif@v1
-        with:
-          # Path to SARIF file relative to the root of the repository
-          sarif_file: .\tmrunfiles\sarif.json
+    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+    # If this step fails, then you should remove it and run the build manually (see below)
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v1
+
+    # ℹ️ Command-line programs to run using the OS shell.
+    # 📚 https://git.io/JvXDl
+
+    # ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
+    #    and modify them (or add more) to build your code if your project
+    #    uses a compiled language
+
+    #- run: |
+    #   make bootstrap
+    #   make release
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
