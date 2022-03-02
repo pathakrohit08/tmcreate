@@ -9,7 +9,7 @@ on:
 
 env:
    FILENAME: D:\a\tmcreate\tmcreate\WebServerEIPCfn_Secure.json
-   MODELNAME: WebServerEIPCfn_Secure
+   MODELNAME: WebServerEIPCfn_Secure.json
 
 jobs:
   build:
