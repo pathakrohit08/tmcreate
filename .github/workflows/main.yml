@@ -43,5 +43,5 @@ jobs:
           # Path to SARIF file relative to the root of the repository
           sarif_file: .\tmrunfiles\WebServerEIPCfn_Secure.sarif
           
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
+      #- name: Perform CodeQL Analysis
+      #  uses: github/codeql-action/analyze@v1
