@@ -9,7 +9,7 @@ on:
 
 env:
    FILENAME: D:\a\tmcreate\tmcreate\WebServerEIPCfn_Secure.json
-   MODELNAME: GitHubAction_EPICfn_Secure
+   MODELNAME: WebServerEIPCfn_Secure
 
 jobs:
   build:
