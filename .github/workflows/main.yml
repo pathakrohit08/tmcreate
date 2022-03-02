@@ -25,7 +25,7 @@ jobs:
 
       - name: Download/Unzip TM CLI
         run: |
-          Invoke-WebRequest -Uri "https://drive.google.com/uc?id=1jeeTJ-LQyHkijYn589lhmo9Ae0NcUUfX&export=download" -OutFile tm_runfiles.zip
+          Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1W2OkfTlEt0JPLwV6gAdbA-Rb-tHqZuHJ" -OutFile tm_runfiles.zip
           Expand-Archive -LiteralPath tm_runfiles.zip -DestinationPath .\tmrunfiles
 
       - name: Create Threat Model
@@ -36,12 +36,12 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: IAC_SARIF_Results
-          path: .\tmrunfiles\WebServerEIPCfn_Secure.json.sarif
+          path: .\tmrunfiles\results.sarif
 
       - uses: github/codeql-action/upload-sarif@v1
         with:
           # Path to SARIF file relative to the root of the repository
-          sarif_file: .\tmrunfiles\WebServerEIPCfn_Secure.json.sarif
+          sarif_file: .\tmrunfiles\results.sarif
           
       #- name: Perform CodeQL Analysis
       #  uses: github/codeql-action/analyze@v1
