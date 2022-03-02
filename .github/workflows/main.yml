@@ -20,7 +20,7 @@ jobs:
 
       - name: Download/Unzip TM CLI
         run: |
-          Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1W2OkfTlEt0JPLwV6gAdbA-Rb-tHqZuHJ" -OutFile tm_runfiles.zip
+          Invoke-WebRequest -Uri "https://drive.google.com/uc?id=1jeeTJ-LQyHkijYn589lhmo9Ae0NcUUfX&export=download" -OutFile tm_runfiles.zip
           Expand-Archive -LiteralPath tm_runfiles.zip -DestinationPath .\tmrunfiles
 
       - name: Create Threat Model
