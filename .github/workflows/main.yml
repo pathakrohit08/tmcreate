@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: IAC_SARIF_Results
-          path: .\tmrunfiles\WebServerEIPCfn_Secure.sarif
+          path: .\tmrunfiles\WebServerEIPCfn_Secure.json.sarif
 
       - uses: github/codeql-action/upload-sarif@v1
         with:
