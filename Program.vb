@@ -138,8 +138,8 @@ withAPIkey:
                     End
                 Else
                     Console.WriteLine("ThreatModel created: " + T.tmFQDN + "/diagram/####")
-                    saveJSONtoFile(sariF, modelName + ".sarif")
-                    Console.WriteLine("SARIF created: " + CurDir() + "\" + modelName + ".sarif")
+                    saveJSONtoFile(sariF, "results.sarif")
+                    Console.WriteLine("SARIF created: " + CurDir() + "\results.sarif")
                 End If
                 End
 
