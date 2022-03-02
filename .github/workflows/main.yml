@@ -9,7 +9,7 @@ on:
 
 env:
    FILENAME: D:\a\tmcreate\tmcreate\WebServerEIPCfn_Secure.json
-   MODELNAME: WebServerEIPCfn_Secure
+   MODELNAME: WebServerEIPCfn_Secure.json
 
 jobs:
   build:
@@ -41,7 +41,7 @@ jobs:
       - uses: github/codeql-action/upload-sarif@v1
         with:
           # Path to SARIF file relative to the root of the repository
-          sarif_file: .\tmrunfiles\WebServerEIPCfn_Secure.sarif
+          sarif_file: .\tmrunfiles\WebServerEIPCfn_Secure.json.sarif
           
       #- name: Perform CodeQL Analysis
       #  uses: github/codeql-action/analyze@v1
