@@ -16,12 +16,8 @@ jobs:
     runs-on: windows-2022
 
     steps:
-          # Initializes the CodeQL tools for scanning.
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
-        with:
-          languages: 'javascript'
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Download/Unzip TM CLI
         run: |
@@ -30,7 +26,7 @@ jobs:
 
       - name: Create Threat Model
         working-directory: .\tmrunfiles
-        run: .\tmcreate submit_cfn --modelname "$env:MODELNAME" --file "$env:FILENAME" --apikey ${{secrets.TM_APIKEY}}
+        run: .\tmcreate submit_cfn --modelname "$env:MODELNAME" --file "$env:FILENAME" --apikey ${{secrets.TM_APIKEY}} --minsarif true
         
       - name: Store SARIF results as Build Artifact
         uses: actions/upload-artifact@v1
@@ -40,8 +36,5 @@ jobs:
 
       - uses: github/codeql-action/upload-sarif@v1
         with:
-          # Path to SARIF file relative to the root of the repository
           sarif_file: .\tmrunfiles\results.sarif
           
-      #- name: Perform CodeQL Analysis
-      #  uses: github/codeql-action/analyze@v1
