@@ -26,7 +26,7 @@ jobs:
 
       - name: Create Threat Model
         working-directory: .\tmrunfiles
-        run: .\tmcreate submit_cfn --modelname "$env:MODELNAME" --file "$env:FILENAME" --apikey ${{secrets.TM_APIKEY}} --minsarif true
+        run: .\tmcreate submit_cfn --modelname "$env:MODELNAME" --file "$env:FILENAME" --apikey ${{secrets.TM_APIKEY}}
         
       - name: Store SARIF results as Build Artifact
         uses: actions/upload-artifact@v1
