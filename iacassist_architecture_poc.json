@@ -640,4 +640,238 @@
                         "Arn"
                       ]
                     },
-             
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "EncryptedS3Bucket",
+                              "Arn"
+                            ]
+                          },
+                          "/*"
+                        ]
+                      ]
+                    }
+                  ],
+                  "Effect": "Allow"
+                }
+              ]
+            },
+            "PolicyName": "encrypted-s3-policy"
+          }
+        ]
+      }
+    },
+    "AssumeInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "AssumeRole"
+          }
+        ]
+      }
+    },
+    "IDEEC2ServerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "GroupDescription": "Enable HTTP access via port 80 and HTTPS access on port 443, and RDP access on Port 3389 from the provided network CIDR",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "443",
+            "ToPort": "443",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3389",
+            "ToPort": "3389",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "DemoDBSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "GroupDescription": "Enable MS SQL access to Port 1433 From IDE EC2 Instance",
+        "GroupName": "DemoDBSecurityGroup",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 1433,
+            "ToPort": 1433,
+            "SourceSecurityGroupId": {
+              "Ref": "IDEEC2ServerSecurityGroup"
+            }
+          }
+        ]
+      }
+    },
+    "DemoRDSOptiongroup": {
+      "Type": "AWS::RDS::OptionGroup",
+      "Properties": {
+        "EngineName": "sqlserver-ex",
+        "MajorEngineVersion": "14.00",
+        "OptionGroupDescription": "DemoRDSOptiongroup"
+      }
+    },
+    "DemoDBSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "Subnet Group for ThreatModeler RDS instance",
+        "DBSubnetGroupName": {
+          "Fn::Sub": "${AWS::StackName}"
+        },
+        "SubnetIds": [
+          {
+            "Ref": "PrivateSubnet1"
+          },
+          {
+            "Ref": "PrivateSubnet2"
+          }
+        ]
+      }
+    },
+    "DemoDB": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "StorageType": "gp2",
+        "AllocatedStorage": "50",
+        "AutoMinorVersionUpgrade": false,
+        "DBInstanceClass": "db.t3.medium",
+        "Engine": "sqlserver-ex",
+        "EngineVersion": "14.00.3381.3.v1",
+        "DBInstanceIdentifier": "idedb-instane",
+        "MasterUsername": {
+          "Ref": "DBUserName"
+        },
+        "MultiAZ": false,
+        "MasterUserPassword": {
+          "Ref": "DBPassword"
+        },
+        "BackupRetentionPeriod": 7,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "IDE-Test Database"
+          }
+        ],
+        "PubliclyAccessible": false,
+        "DBSubnetGroupName": {
+          "Ref": "DemoDBSubnetGroup"
+        },
+        "OptionGroupName": {
+          "Ref": "DemoRDSOptiongroup"
+        },
+        "AvailabilityZone": {
+          "Ref": "RDSAvailabilityZone"
+        },
+        "VPCSecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "DemoDBSecurityGroup",
+              "GroupId"
+            ]
+          }
+        ]
+      },
+      "DeletionPolicy": "Delete"
+    },
+    "EncryptedS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::Sub": "encryptedbucket-${AWS::Region}-${AWS::AccountId}"
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "aws:kms",
+                "KMSMasterKeyID": {
+                  "Ref": "KMSKeyID"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "VPC": {
+      "Description": "A reference to the created VPC",
+      "Value": {
+        "Ref": "VPC"
+      }
+    },
+    "PublicSubnets": {
+      "Description": "A list of the public subnets",
+      "Value": {
+        "Fn::Join": [
+          ",",
+          [
+            {
+              "Ref": "PublicSubnet1"
+            }
+          ]
+        ]
+      }
+    },
+    "PrivateSubnets": {
+      "Description": "A list of the private subnets",
+      "Value": {
+        "Fn::Join": [
+          ",",
+          [
+            {
+              "Ref": "PrivateSubnet1"
+            }
+          ]
+        ]
+      }
+    },
+    "PublicSubnet1": {
+      "Description": "A reference to the public subnet in the 1st Availability Zone",
+      "Value": {
+        "Ref": "PublicSubnet1"
+      }
+    },
+    "PrivateSubnet1": {
+      "Description": "A reference to the private subnet in the 1st Availability Zone",
+      "Value": {
+        "Ref": "PrivateSubnet1"
+      }
+    },
+    "NoIngressSecurityGroup": {
+      "Description": "Security group with no ingress rule",
+      "Value": {
+        "Ref": "NoIngressSecurityGroup"
+      }
+    }
+  }
+}
+
