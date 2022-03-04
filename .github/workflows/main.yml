@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-   FILENAME: D:\a\tmcreate\tmcreate\WebServerEIPCfn_Secure.json
-   MODELNAME: WebServerEIPCfn_Secure.json
+   FILENAME: D:\a\tmcreate\tmcreate\iacassist_poc.json
+   MODELNAME: iacassist_poc.json
 
 jobs:
   build:
