@@ -541,7 +541,7 @@
     "IDEEC2Instance2": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "DisableApiTermination": "false",
+        "DisableApiTermination": "true",
         "SecurityGroupIds": [
           {
             "Ref": "IDEEC2ServerSecurityGroup"
