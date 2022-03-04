@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-   FILENAME: D:\a\tmcreate\tmcreate\iacassist_poc.json
-   MODELNAME: iacassist_poc.json
+   FILENAME: D:\a\tmcreate\tmcreate\iacassist_architecture_poc.json
+   MODELNAME: iacassist_architecture_poc.json
 
 jobs:
   build:
