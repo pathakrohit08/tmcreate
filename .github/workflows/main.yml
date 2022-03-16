@@ -9,7 +9,7 @@ on:
 
 env:
    FILENAME: D:\a\tmcreate\tmcreate\iacassist_architecture_poc.json
-   MODELNAME: iacassist_architecture_poc2.json
+   MODELNAME: iacassist_architecture_poc3.json
 
 jobs:
   build:
