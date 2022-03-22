@@ -1,0 +1,45 @@
+name: deploy
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - uses: jitterbit/get-changed-files@v1
+        id: abc
+        with:
+          format: space-delimited
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Printing
+        run: |
+          echo "All:"
+          echo "${{ steps.abc.outputs.all }}"
+          echo "Added:"
+          echo "${{ steps.abc.outputs.added }}"
+          echo "Removed:"
+          echo "${{ steps.abc.outputs.removed }}"
+          echo "Renamed:"
+          echo "${{ steps.abc.outputs.renamed }}"
+          echo "Modified:"
+          echo "${{ steps.abc.outputs.modified }}"
+          echo "Content=$(cat ${{ steps.abc.outputs.modified }})"
+          echo "Added+Modified:"
+          echo "${{ steps.abc.outputs.added_modified }}"
+
+      - name: List all modified files
+        run: |
+          for file in ${{ steps.abc.outputs.modified }}; do
+            if [ "${file: -3}" == ".py" ]
+              echo "$file was added"
+            elif [ "${file: -4}" == ".yml" ]
+              echo "$file was added"
+          done
+
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7.7' # install the python version needed
+                    
+      - name: execute py script # run sj-gobierno.py to get the latest data
+        run: python test.py ${{ steps.abc.outputs.modified }}
